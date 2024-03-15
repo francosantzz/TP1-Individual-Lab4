@@ -13,7 +13,6 @@ function llamada() {
         .catch(error => console.log(error));
 
     limpiarInput();
-    document.getElementById("container__search__button").addEventListener("click", buscarUsuario, false);
     
 }
 
@@ -51,12 +50,25 @@ function crearTabla(usuario) {
     return contenidoTabla;
 }
 
+const searchInput = document.getElementById('container__search__input');
+const searchButton = document.getElementById('container__search__button');
+
+searchButton.addEventListener('click', buscarUsuario);
+
 function buscarUsuario() {
-    fetch(urlSearch)
-        .then(response => response.json())
-        .then(data => mostrarBuscados(data))
-        .catch(error => console.log(error));
-    
+    const searchTerm = searchInput.value.trim();
+    if (searchTerm !== '') {
+        fetch(`http://168.194.207.98:8081/tp/lista.php?action=BUSCAR&usuario=${searchTerm}`)
+            .then(response => response.json())
+            .then(data => {
+                mostrarBuscados(data);
+            })
+            .catch(error => {
+                console.error('Error al buscar usuario:', error);
+            });
+    } else {
+        alert('Por favor ingrese un término de búsqueda.');
+    }
 }
 
 function mostrarBuscados(data) {
