@@ -66,9 +66,7 @@ function buscarUsuario() {
             .catch(error => {
                 console.error('Error al buscar usuario:', error);
             });
-    } else {
-        alert('Por favor ingrese un término de búsqueda.');
-    }
+    } 
 }
 
 function mostrarBuscados(data) {
