@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" type="text/css" href="style-lista.css">
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@600&display=swap" rel="stylesheet">
+	<title>Lista</title>
+</head>
+<body>
+	<div>
+		
+		<div class="titulo">
+			<h1 style="text-align: center;">Tabla de registros</h1>
+		</div>
+		
+		<div class="container">
+			<div class="container__search">
+				<div class="searcher">
+				<input id="container__search__input" type="text" name="search" placeholder="Buscar por nombre">
+				<button id="clearButton" onclick="limpiarInput(), llamada()">✖</button>
+				</div>	
+				<button id="container__search__button">Buscar</button>
+			</div>
+		</div>
+		<div class="div_table">
+			<table>
+				<thead class="head">
+					<tr>
+						<th class="head_id">Id</th>
+						<th class="head_user">Usuario</th>
+						<th class="head_bloq">Bloqueado</th>
+						<th class="head_last-name">Apellido</th>
+						<th class="head_name">Nombre</th>
+						<th class="head_bloquear">Bloquear</th>
+						<th class="head_desbloquear">Desbloquear</th>
+					</tr>
+				</thead>
+				<tbody id="users">
+
+				</tbody>
+				
+			</table>
+		</div>
+	</div>
+	<div id="errorPopup" class="popup">
+		<div class="popup-content">
+			<span class="close" onclick="CerrarPopup()">&times;</span>
+			<p id="errorMessage"></p>
+		</div>
+	</div>
+	<script src="lista.js"></script>
+</body>
+</html>

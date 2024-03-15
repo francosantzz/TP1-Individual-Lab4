@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" type="text/css" href="style-login.css">
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@600&display=swap" rel="stylesheet">
+	<title>Login</title>
+</head>
+<body>
+	<div class="login">
+		<form class="login-form">
+			<div class="login-form__container1">
+				<label class="login-form__label1">Usuario</label>
+				<input required type="text" id="user" name="user">
+			</div>
+			<div class="login-form__container2">
+				<label class="login-form__label2">Clave</label>
+				<input required type="password" id="password" name="password">
+			</div>
+			<button class="submit" id="submit" onclick="login()">Ingresar</button>
+		</form>
+		<p id="msg"></p>
+	</div>
+	<div id="errorPopup" class="popup">
+		<div class="popup-content">
+			<span class="close" onclick="cerrarPopup()">&times;</span>
+			<p id="errorMessage"></p>
+		</div>
+	</div>
+	<script src="login.js"></script>
+</body>
+
+</html>
