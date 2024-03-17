@@ -1,114 +1,80 @@
-const urlSearch = 'http://168.194.207.98:8081/tp/lista.php?action=BUSCAR';
-
-const barraBusqueda = document.getElementById('container__search__input')
-barraBusqueda.addEventListener("keypress", function(event){
-    if(event.key === 'Enter'){
-        buscarUsuario()
-    }
-});
-function llamada() {
-    fetch(urlSearch)
-        .then(response => response.json())
-        .then(data => cargarUsuarios(data))
-        .catch(error => console.log(error));
-
-    limpiarInput();
-    
-}
 
 function limpiarInput(){
     document.getElementById("container__search__input").value = "";
+    buscarUsuario();
 }
 
-function cargarUsuarios(data) {
-    let registros = '';
+    const searchInput = document.getElementById("container__search__input");
+    const searchButton = document.getElementById("container__search__button");
+    const tableBody = document.getElementById("users");
 
     
-    for(let i = 0; i < data.length; i++){
-        registros += crearTabla(data[i]);
-    }
-    
-    
+    const searcher = document.getElementById('container__search__input')
+    searcher.addEventListener("keypress", function (event) {
+        if (event.key === 'Enter') {
+            buscarUsuario()
+        }
+    });
 
-    document.getElementById('users').innerHTML = registros;
-}
+    function cargarDatos(data) {
+        data.sort((a, b) => a.usuario.localeCompare(b.usuario));
 
-function crearTabla(usuario) {
-    let contenidoTabla = '';
-
-    usuario.bloqueado == "Y" ? contenidoTabla += `<tr class="bloqueado">` : contenidoTabla += `<tr class="desbloqueado">`;
-
-    contenidoTabla += `<td>${usuario.id}</td>
-                    <td>${usuario.usuario}</td>
-                    <td>${usuario.bloqueado}</td>
-                    <td>${usuario.apellido}</td>
-                    <td>${usuario.nombre}</td>
-                    <td><button onclick="toggleBloqueo(${usuario.id}, 'Y')"><img src="disgusto.png"></button></td>
-                    <td><button onclick="toggleBloqueo(${usuario.id}, 'N')"><img src="me-gusta.png"></button></td>
-                </tr>`;
-    
-    return contenidoTabla;
-}
-
-const searchInput = document.getElementById('container__search__input');
-const searchButton = document.getElementById('container__search__button');
-
-searchButton.addEventListener('click', buscarUsuario);
-
-function buscarUsuario() {
-    const searchTerm = searchInput.value.trim();
-    if (searchTerm !== '') {
-        fetch(`http://168.194.207.98:8081/tp/lista.php?action=BUSCAR&usuario=${searchTerm}`)
-            .then(response => response.json())
-            .then(data => {
-                mostrarBuscados(data);
-            })
-            .catch(error => {
-                console.error('Error al buscar usuario:', error);
+        tableBody.innerHTML = ""; 
+        if (data.length === 0) {
+            tableBody.innerHTML = `<tr><td colspan='7' class="no-results">No se encontraron resultados</td></tr>`;
+        } else {
+            data.forEach(function (usuario) {
+                const tr = document.createElement("tr");
+                tr.innerHTML = `
+                <td>${usuario.id}</td>
+                <td>${usuario.usuario}</td>
+                <td>${usuario.bloqueado}</td>
+                <td>${usuario.apellido}</td>
+                <td>${usuario.nombre}</td>
+                <td><button class="bloquear-btn" data-id="${usuario.id}"><img src="disgusto.png"></button></td>
+                <td><button class="desbloquear-btn" data-id="${usuario.id}"><img src="me-gusta.png"></button></td>
+            `;
+                tr.classList.add(usuario.bloqueado === "Y" ? "bloqueado" : "desbloqueado");
+                tableBody.appendChild(tr);
             });
-    } 
-}
-
-function mostrarBuscados(data) {
-    let tabla = '';
-    let input = document.getElementById("container__search__input").value;
-    let num = 0;
-
-    for(let i = 0; i < data.length; i++){
-        if(data[i].usuario.includes(input)) {
-            tabla += crearTabla(data[i]);
-            num++;
         }
     }
-    
-    document.getElementById('users').innerHTML = tabla;
 
-
-    if(num==0){
-        mostrarError("Sin Coincidencias");
+    function buscarUsuario() {
+        const searchTerm = searchInput.value.trim();
+        fetch(`http://168.194.207.98:8081/tp/lista.php?action=BUSCAR&usuario=${searchTerm}`)
+            .then(response => response.json())
+            .then(data => cargarDatos(data))
+            .catch(error => {
+                console.error("Error al buscar usuarios:", error);
+                alert("Ocurrió un error al buscar usuarios. Por favor, inténtalo de nuevo.");
+            });
     }
-}
 
-function mostrarError(message) {
-    const errorPopup = document.getElementById("errorPopup");
-    const errorMessage = document.getElementById("errorMessage");
-    errorMessage.textContent = message;
-    errorPopup.style.display = "block";
-}
+    searchButton.addEventListener("click", buscarUsuario);
+    buscarUsuario();
 
-function CerrarPopup() {
-    const errorPopup = document.getElementById("errorPopup");
-    errorPopup.style.display = "none";
-}
-function toggleBloqueo(id, accion){
-    let url = `http://168.194.207.98:8081/tp/lista.php?action=BLOQUEAR&idUser=${id}&estado=${accion}`;
+    tableBody.addEventListener("click", function (event) {
+        if (event.target.closest(".bloquear-btn")) {
+            const userId = event.target.closest(".bloquear-btn").dataset.id;
+            bloquearUsuario(userId, "Y");
+        } else if (event.target.closest(".desbloquear-btn")) {
+            const userId = event.target.closest(".desbloquear-btn").dataset.id;
+            bloquearUsuario(userId, "N");
+        }
+    });
 
-    fetch(url)
-        .then(response => response.json())
-        .then(data => buscarUsuario())
-        .catch(error => console.log(error));
-}
-
-
-
-window.addEventListener("load", llamada, false);
+    function bloquearUsuario(userId, estado) {
+        fetch(`http://168.194.207.98:8081/tp/lista.php?action=BLOQUEAR&idUser=${userId}&estado=${estado}`)
+            .then(response => {
+                if (response.ok) {
+                    buscarUsuario();
+                } else {
+                    throw new Error("Error al bloquear/desbloquear usuario");
+                }
+            })
+            .catch(error => {
+                console.error("Error al bloquear/desbloquear usuario:", error);
+                alert("Ocurrió un error al bloquear/desbloquear usuario. Por favor, inténtalo de nuevo.");
+            });
+    }
